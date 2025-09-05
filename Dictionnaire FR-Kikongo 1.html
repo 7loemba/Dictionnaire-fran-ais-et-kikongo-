@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dictionnaire Français - Kikongo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #28a745;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .result {
+      background: white;
+      border-radius: 6px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .word {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .translation {
+      margin-top: 5px;
+      font-size: 18px;
+      color: #555;
+    }
+
+    .example {
+      margin-top: 10px;
+      font-style: italic;
+      color: #777;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    📚 Dictionnaire Français - Kikongo
+  </header>
+
+  <div class="container">
+    <input type="text" id="searchInput" placeholder="Recherchez un mot en français..." oninput="searchWord()" />
+
+    <div class="result" id="resultBox">
+      🔎 Tapez un mot pour voir la traduction.
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Franck Loemba – Kikongo App
+  </footer>
+
+  <script>
+    // Base de données des mots français -> kikongo
+    // Ajout des jours, mois, et mots quotidiens
+    const dictionnaire = [
+      // Vocabulaire initial
+      {
+        mot_fr: "chemin",
+        traduction_kikongo: "nzila",
+        exemple_fr: "Le chemin qui mène au ciel",
+        exemple_kikongo: "Nzila ya kwenda na zulu"
+      },
+      {
+        mot_fr: "pluie",
+        traduction_kikongo: "mvula",
+        exemple_fr: "Il pleut beaucoup",
+        exemple_kikongo: "Mvula ke vula mingi"
+      },
+      {
+        mot_fr: "semence",
+        traduction_kikongo: "mpanzi",
+        exemple_fr: "La semence est dans le sol",
+        exemple_kikongo: "Mpanzi ke sambwila nsi"
+      },
+      {
+        mot_fr: "nous",
+        traduction_kikongo: "beto",
+        exemple_fr: "Nous voulons la paix",
+        exemple_kikongo: "Beto ke zola Kimia"
+      },
+      {
+        mot_fr: "petit",
+        traduction_kikongo: "fioti",
+        exemple_fr: "Le pain est petit",
+        exemple_kikongo: "Dipa ke fioti"
+      },
+      {
+          mot_fr: "bonjour",
+        traduction_kikongo: "Mbote",
+        exemple_fr: "Bonjour à toi",
+        exemple_kikongo: "Mbote na ngue"
+      },
+      {
+          mot_fr: "non",
+        traduction_kikongo: "ve",
+        exemple_fr: "Non, je ne sais",
+        exemple_kikongo: "Ve, mono ke zaba ve"
+      },
+      {
+          mot_fr: "merci",
+        traduction_kikongo: "matondo",
+        exemple_fr: "Merci beaucoup",
+        exemple_kikongo: "matondo mingi"
+      },
+      {
+          mot_fr: "pardon",
+        traduction_kikongo: "nsoni",
+        exemple_fr: "pardon à toi",
+        exemple_kikongo: "nsoni na nge"
+      },
+      {
+          mot_fr: "monsieur",
+        traduction_kikongo: "mfumu",
+        exemple_fr: "Notre chef",
+        exemple_kikongo: "mfumu na beto"
+      },
+      {
+          mot_fr: "mère",
+        traduction_kikongo: "mama",
+        exemple_fr: "ma mère",
+        exemple_kikongo: "mama wà mono"
+      },
+      {
+          mot_fr: "père",
+        traduction_kikongo: "tata",
+        exemple_fr: "le père de l'enfant'",
+        exemple_kikongo: "tata ya mwana"
+      },
+
+      // Jours de la semaine
+      {
+        mot_fr: "lundi",
+        traduction_kikongo: "kintente"
+      },
+      {
+        mot_fr: "mardi",
+        traduction_kikongo: "kizole"
+      },
+      {
+        mot_fr: "mercredi",
+        traduction_kikongo: "kitatu"
+      },
+      {
+        mot_fr: "jeudi",
+        traduction_kikongo: "kiya"
+      },
+      {
+        mot_fr: "vendredi",
+        traduction_kikongo: "kitanu"
+      },
+      {
+        mot_fr: "samedi",
+        traduction_kikongo: "mposo"
+      },
+      {
+        mot_fr: "dimanche",
+        traduction_kikongo: "lumingu"
+      },
+
+      // Mois (approximation, selon usage local - souvent mois sont dits à la française)
+      {
+        mot_fr: "janvier",
+        traduction_kikongo: "Janvye"
+      },
+      {
+        mot_fr: "février",
+        traduction_kikongo: "Févriye"
+      },
+      {
+        mot_fr: "mars",
+        traduction_kikongo: "Mas"
+      },
+      {
+        mot_fr: "avril",
+        traduction_kikongo: "Avril"
+      },
+      {
+        mot_fr: "mai",
+        traduction_kikongo: "Mai"
+      },
+      {
+        mot_fr: "juin",
+        traduction_kikongo: "Juin"
+      },
+      {
+        mot_fr: "juillet",
+        traduction_kikongo: "Juillet"
+      },
+      {
+        mot_fr: "août",
+        traduction_kikongo: "Out"
+      },
+      {
+        mot_fr: "septembre",
+        traduction_kikongo: "Septembre"
+      },
+      {
+        mot_fr: "octobre",
+        traduction_kikongo: "Octobre"
+      },
+      {
+        mot_fr: "novembre",
+        traduction_kikongo: "Novembre"
+      },
+      {
+        mot_fr: "décembre",
+        traduction_kikongo: "Décembre"
+      },
+
+      // Mots quotidiens
+      {
+        mot_fr: "eau",
+        traduction_kikongo: "mazi",
+        exemple_fr: "Je bois de l'eau",
+        exemple_kikongo: "Mono ke yua mazi"
+      },
+      {
+        mot_fr: "pain",
+        traduction_kikongo: "dipa",
+        exemple_fr: "Le pain est chaud",
+        exemple_kikongo: "Dipa ke bilu"
+      },
+      {
+        mot_fr: "maison",
+        traduction_kikongo: "ndako",
+        exemple_fr: "La maison est grande",
+        exemple_kikongo: "Ndako ke mingi"
+      },
+      {
+        mot_fr: "feu",
+        traduction_kikongo: "moto",
+        exemple_fr: "Le feu brûle fort",
+        exemple_kikongo: "Moto ke waka mingi"
+      },
+      {
+        mot_fr: "homme",
+        traduction_kikongo: "muntu",
+        exemple_fr: "L'homme travaille",
+        exemple_kikongo: "Muntu ke vanda"
+      },
+      {
+        mot_fr: "femme",
+        traduction_kikongo: "mukaji",
+        exemple_fr: "La femme parle",
+        exemple_kikongo: "Mukaji ke yindula"
+      }
+    ];
+
+    function searchWord() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const resultBox = document.getElementById("resultBox");
+      const word = dictionnaire.find(item => item.mot_fr === input);
+
+      if (word) {
+        let resultHTML = `
+          <div class="word">${word.mot_fr}</div>
+          <div class="translation">👉 ${word.traduction_kikongo}</div>
+        `;
+
+        if (word.exemple_fr && word.exemple_kikongo) {
+          resultHTML += `
+            <div class="example">💬 ${word.exemple_fr}<br>📘 ${word.exemple_kikongo}</div>
+          `;
+        }
+
+        resultBox.innerHTML = resultHTML;
+      } else if (input.length > 0) {
+        resultBox.innerHTML = `❌ Mot non trouvé dans la base.`;
+      } else {
+        resultBox.innerHTML = `🔎 Tapez un mot pour voir la traduction.`;
+      }
+    }
+  </script>
+</body>
+</html>
